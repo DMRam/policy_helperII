@@ -60,45 +60,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 user: null
             });
 
-            console.log("Attempting login with:", {
-                baseUrl: credentials.baseUrl,
-                username: credentials.username
-            });
-
+            // 1. Perform login
             const response: any = await apiClient.post('/login', credentials);
 
-            console.log("Login response:", response.data);
-
             if (!response.data.success) {
-                throw new Error('Login failed - no success flag');
+                throw new Error('Login failed');
             }
 
-            // Verify session
-            const sessionCheck: any = await apiClient.get('/session');
-            console.log("Session check:", sessionCheck.data);
+            // 2. Verify session
+            const isAuth = await verifySession();
 
-            if (!sessionCheck.data.authenticated) {
+            if (!isAuth) {
                 throw new Error('Session verification failed');
             }
 
-            setState({
-                isAuthenticated: true,
-                loading: false,
-                error: null,
-                user: credentials.username
-            });
-
+            // 3. Navigate on success
             navigate('/policies');
 
         } catch (error: any) {
-            console.error("Login error details:", {
-                message: error.message,
-                response: error.response?.data,
-                code: error.code
-            });
-
             const errorMessage = error.response?.data?.error ||
-                error.response?.data?.message ||
                 error.message ||
                 'Login failed. Please try again.';
 
@@ -108,10 +88,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 error: errorMessage,
                 user: null
             });
-
             throw error;
         }
-    }, [navigate]);
+    }, [navigate, verifySession]);
 
     const logout = useCallback(async () => {
         try {
