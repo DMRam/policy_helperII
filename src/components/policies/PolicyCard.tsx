@@ -30,7 +30,7 @@ const contentVariants = {
  * @param param0 
  * @returns 
  */
-export const PolicyCard = ({ policy }: { policy: Policy }) => {
+export const PolicyCard = ({ policy, className }: { policy: Policy, className: string }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const lastUpdated = policy['Last Modification Date']
         ? new Date(policy['Last Modification Date']).toLocaleDateString()
@@ -45,7 +45,7 @@ export const PolicyCard = ({ policy }: { policy: Policy }) => {
         .filter(([key]) => !['Name', 'Description', 'Last Modification Date', 'OPSS-Pol:Approval Status', 'Location'].includes(key));
 
     return (
-        <div className="relative w-full">
+        <div className={className}>
             {/* Main card with responsive sizing */}
             <motion.div
                 className={`bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer w-full ${isExpanded ? "fixed inset-0 m-auto z-50 h-[90vh] max-w-[96vw] sm:max-w-[90vw] md:max-w-2xl md:h-[85vh]" : "relative"
